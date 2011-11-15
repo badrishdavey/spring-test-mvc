@@ -17,7 +17,7 @@
 package org.springframework.test.web.server.samples.standalone;
 
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.result.MockMvcResultActions.response;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.standaloneSetup;
 
 import org.junit.Test;
@@ -28,20 +28,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * Tests that write directly to the response.
+ * Response written from {@code @ResponseBody} method.
  *
  * @author Rossen Stoyanchev
  */
-public class ResponseTests {
+public class ResponseBodyTests {
 
 	@Test
 	public void json() throws Exception {
 		
 		standaloneSetup(new PersonController()).build()
 			.perform(get("/person/Lee").accept(MediaType.APPLICATION_JSON))
-				.andExpect(response().status().isOk())
-				.andExpect(response().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(response().content().jsonPath("$.name").evaluatesTo("Lee"));
+				.andExpect(status().isOk())
+				.andExpect(contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.name").value("Lee"));
 	}	
 
 	@Controller
@@ -49,7 +49,8 @@ public class ResponseTests {
 	private class PersonController {
 
 		@RequestMapping(value="/person/{name}")
-		public @ResponseBody Person get(@PathVariable String name) {
+		@ResponseBody
+		public Person get(@PathVariable String name) {
 			Person person = new Person(name);
 			return person;
 		}

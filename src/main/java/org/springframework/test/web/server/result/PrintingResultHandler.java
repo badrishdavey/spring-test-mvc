@@ -19,10 +19,16 @@ package org.springframework.test.web.server.result;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.server.ResultPrinter;
+import org.springframework.test.web.server.ResultHandler;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.method.HandlerMethod;
@@ -30,11 +36,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Prints the results of an executed Spring MVC request to an {@link OutputStream}.
+ * Prints the results of an executed request to an {@link OutputStream}.
  * 
  * @author Rossen Stoyanchev
  */
-public class DefaultResultPrinter implements ResultPrinter {
+public class PrintingResultHandler implements ResultHandler {
 
 	private static final int LABEL_WIDTH = 20;
 	
@@ -42,13 +48,13 @@ public class DefaultResultPrinter implements ResultPrinter {
 
 	/**
 	 * Protected constructor.
-	 * @see MockMvcResultActions
+	 * @see MockMvcResultMatchers
 	 */
-	protected DefaultResultPrinter(OutputStream outputStream) {
+	protected PrintingResultHandler(OutputStream outputStream) {
 		this.writer = new PrintWriter(outputStream);
 	}
 
-	public void print(MockHttpServletRequest request, 
+	public void handle(MockHttpServletRequest request, 
 					  MockHttpServletResponse response, 
 					  Object handler,
 					  HandlerInterceptor[] interceptors, 
@@ -71,10 +77,31 @@ public class DefaultResultPrinter implements ResultPrinter {
 		printHeading("HttpServletRequest");
 		printValue("HTTP Method", request.getMethod());
 		printValue("Request URI", request.getRequestURI());
-		printValue("Params", ResultMatcherUtils.requestParamsAsMap(request));
-		printValue("Headers", ResultMatcherUtils.requestHeadersAsMap(request));
+		printValue("Params", getRequestParams(request));
+		printValue("Headers", getRequestHeaders(request));
 	}
 
+	private Map<String, Object> getRequestParams(MockHttpServletRequest request) {
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Enumeration<String> names = request.getParameterNames();
+		while (names.hasMoreElements()) {
+			String name = names.nextElement(); 
+			String[] values = request.getParameterValues(name);
+			result.put(name, (values != null) ? Arrays.asList(values) : null);
+		}
+		return result;
+	}
+	
+	private Map<String, Object> getRequestHeaders(MockHttpServletRequest request) {
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Enumeration<?> names = request.getHeaderNames();
+		while (names.hasMoreElements()) {
+			String name = (String) names.nextElement();
+			map.put(name, request.getHeader(name));
+		}
+		return map;
+	}
+	
 	protected void printHeading(String text) {
 		this.writer.println();
 		this.writer.println(formatLabel(text, LABEL_WIDTH).append(":"));
@@ -163,13 +190,29 @@ public class DefaultResultPrinter implements ResultPrinter {
 		printHeading("HttpServletResponse");
 		printValue("status", response.getStatus());
 		printValue("error message", response.getErrorMessage());
-		printValue("headers", ResultMatcherUtils.headersAsMap(response));
+		printValue("headers", getHeaders(response));
 		printValue("content type", response.getContentType());
 		printValue("body", response.getContentAsString());
 		printValue("forwarded URL", response.getForwardedUrl());
 		printValue("redirected URL", response.getRedirectedUrl());
 		printValue("included URLs", response.getIncludedUrls());
-		printValue("cookies", ResultMatcherUtils.cookiesAsMap(response));
+		printValue("cookies", getCookies(response));
 	}
 
+	private Map<String, String> getHeaders(MockHttpServletResponse response) {
+		Map<String, String> headers = new LinkedHashMap<String, String>();
+		for (String name : response.getHeaderNames()) {
+			headers.put(name, response.getHeader(name));
+		}
+		return headers;
+	}
+
+	private Map<String, String> getCookies(MockHttpServletResponse response) {
+		Map<String, String> cookies = new LinkedHashMap<String, String>();
+		for (Cookie cookie : response.getCookies()) {
+			cookies.put(cookie.getName(), cookie.getValue());
+		}
+		return cookies;
+	}
+	
 }
