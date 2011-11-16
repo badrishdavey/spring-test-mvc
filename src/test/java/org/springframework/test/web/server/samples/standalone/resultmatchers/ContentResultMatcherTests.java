@@ -19,9 +19,8 @@ package org.springframework.test.web.server.samples.standalone.resultmatchers;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.characterEncoding;
+import static org.springframework.test.web.server.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.contentType;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.standaloneSetup;
 
 import org.junit.Before;
@@ -53,33 +52,39 @@ public class ContentResultMatcherTests {
 	@Test
 	public void testContentType() throws Exception {
 		this.mockMvc.perform(get("/handle"))
-			.andExpect(contentType(MediaType.TEXT_PLAIN))
-			.andExpect(contentType("text/plain"));
+			.andExpect(content().type(MediaType.TEXT_PLAIN))
+			.andExpect(content().type("text/plain"));
 		
 		this.mockMvc.perform(get("/handleUtf8"))
-			.andExpect(contentType(MediaType.valueOf("text/plain")))
-			.andExpect(contentType("text/plain"));
+			.andExpect(content().type(MediaType.valueOf("text/plain;charset=UTF-8")))
+			.andExpect(content().type("text/plain;charset=UTF-8"));
 	}
 	
 	@Test
-	public void testContentEqualTo() throws Exception {
-		this.mockMvc.perform(get("/handle")).andExpect(content("Hello world!"));
-		this.mockMvc.perform(get("/handleUtf8")).andExpect(content("こんにちは世界！"));
+	public void testContentAsString() throws Exception {
+		this.mockMvc.perform(get("/handle")).andExpect(content().string("Hello world!"));
+		this.mockMvc.perform(get("/handleUtf8")).andExpect(content().string("\u3053\u3093\u306b\u3061\u306f\u4e16\u754c\uff01")).andDo(print());
 		
 		// Hamcrest matchers...
-		this.mockMvc.perform(get("/handle")).andExpect(content(equalTo("Hello world!")));
-		this.mockMvc.perform(get("/handleUtf8")).andExpect(content(equalTo("こんにちは世界！")));
+		this.mockMvc.perform(get("/handle")).andExpect(content().string(equalTo("Hello world!")));
+		this.mockMvc.perform(get("/handleUtf8")).andExpect(content().string(equalTo("\u3053\u3093\u306b\u3061\u306f\u4e16\u754c\uff01")));
+	}
+	
+	@Test
+	public void testContentAsBytes() throws Exception {
+		this.mockMvc.perform(get("/handle")).andExpect(content().bytes("Hello world!".getBytes("ISO-8859-1")));
+		this.mockMvc.perform(get("/handleUtf8")).andExpect(content().bytes("\u3053\u3093\u306b\u3061\u306f\u4e16\u754c\uff01".getBytes("UTF-8"))).andDo(print());
 	}
 
 	@Test
-	public void testContentMatcher() throws Exception {
-		this.mockMvc.perform(get("/handle")).andExpect(content(containsString("world")));
+	public void testContentStringMatcher() throws Exception {
+		this.mockMvc.perform(get("/handle")).andExpect(content().string(containsString("world")));
 	}
 
 	@Test
-	public void testCharacterEncodingEqualTo() throws Exception {
-		this.mockMvc.perform(get("/handle")).andExpect(characterEncoding("ISO-8859-1"));
-		this.mockMvc.perform(get("/handleUtf8")).andExpect(characterEncoding("UTF-8"));
+	public void testCharacterEncoding() throws Exception {
+		this.mockMvc.perform(get("/handle")).andExpect(content().encoding("ISO-8859-1"));
+		this.mockMvc.perform(get("/handleUtf8")).andExpect(content().encoding("UTF-8"));
 	}
 	
 	
@@ -96,7 +101,7 @@ public class ContentResultMatcherTests {
 		@RequestMapping(value="/handleUtf8", produces="text/plain;charset=UTF-8")
 		@ResponseBody
 		public String handleWithCharset() {
-			return "こんにちは世界！";	// "Hello world! (Japanese)
+			return "\u3053\u3093\u306b\u3061\u306f\u4e16\u754c\uff01";	// "Hello world! (Japanese)
 		}
 	}
 }

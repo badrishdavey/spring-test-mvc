@@ -58,40 +58,40 @@ public class ModelResultMatcherTests {
 	@Test
 	public void testAttributeEqualTo() throws Exception {
 		mockMvc.perform(get("/"))
-			.andExpect(modelAttribute("integer", 3))
-			.andExpect(modelAttribute("string", "a string value"));
+			.andExpect(model().attribute("integer", 3))
+			.andExpect(model().attribute("string", "a string value"));
 		
 		// Hamcrest Matchers..
 		mockMvc.perform(get("/"))
-			.andExpect(modelAttribute("integer", equalTo(3)))
-			.andExpect(modelAttribute("string", equalTo("a string value")));
+			.andExpect(model().attribute("integer", equalTo(3)))
+			.andExpect(model().attribute("string", equalTo("a string value")));
 	}
 
 	@Test
 	public void testAttributeExists() throws Exception {
-		mockMvc.perform(get("/")).andExpect(modelAttributeExists("integer", "string", "person"));
+		mockMvc.perform(get("/")).andExpect(model().attributeExists("integer", "string", "person"));
 		
 		// Hamcrest Matchers..
-		mockMvc.perform(get("/")).andExpect(modelAttribute("integer", notNullValue()));
-		mockMvc.perform(get("/")).andExpect(modelAttribute("INTEGER", nullValue()));
+		mockMvc.perform(get("/")).andExpect(model().attribute("integer", notNullValue()));
+		mockMvc.perform(get("/")).andExpect(model().attribute("INTEGER", nullValue()));
 	}
 
 	@Test
 	public void testAttributeHamcrestMatchers() throws Exception {
 		mockMvc.perform(get("/"))
-			.andExpect(modelAttribute("integer", allOf(greaterThan(2), lessThan(4))))
-			.andExpect(modelAttribute("string", allOf(startsWith("a string"), endsWith("value"))))
-			.andExpect(modelAttribute("person", hasProperty("name", equalTo("a name"))));
+			.andExpect(model().attribute("integer", allOf(greaterThan(2), lessThan(4))))
+			.andExpect(model().attribute("string", allOf(startsWith("a string"), endsWith("value"))))
+			.andExpect(model().attribute("person", hasProperty("name", equalTo("a name"))));
 	}
 
 	@Test
 	public void testHasErrors() throws Exception {
-		mockMvc.perform(post("/persons")).andExpect(modelAttributeHasErrors("person"));
+		mockMvc.perform(post("/persons")).andExpect(model().attributeHasErrors("person"));
 	}
 
 	@Test
 	public void testHasNoErrors() throws Exception {
-		mockMvc.perform(get("/")).andExpect(modelHasNoErrors());
+		mockMvc.perform(get("/")).andExpect(model().hasNoErrors());
 	}
 
 	

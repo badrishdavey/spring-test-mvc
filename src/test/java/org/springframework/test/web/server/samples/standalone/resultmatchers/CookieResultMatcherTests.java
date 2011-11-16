@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.server.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.cookieValue;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.standaloneSetup;
 
 import org.junit.Before;
@@ -51,17 +51,17 @@ public class CookieResultMatcherTests {
 	@Test
 	public void testEqualTo() throws Exception {
 		this.mockMvc.perform(get("/").param("locale", "en_US")).andDo(print())
-			.andExpect(cookieValue(CookieLocaleResolver.DEFAULT_COOKIE_NAME, "en_US"));
+			.andExpect(cookie().value(CookieLocaleResolver.DEFAULT_COOKIE_NAME, "en_US"));
 		
 		// Hamcrest matchers...
 		this.mockMvc.perform(get("/").param("locale", "en_US"))
-			.andExpect(cookieValue(CookieLocaleResolver.DEFAULT_COOKIE_NAME, equalTo("en_US")));
+			.andExpect(cookie().value(CookieLocaleResolver.DEFAULT_COOKIE_NAME, equalTo("en_US")));
 	}
 	
 	@Test
 	public void testMatcher() throws Exception {
 		this.mockMvc.perform(get("/").param("locale", "en_US"))
-			.andExpect(cookieValue(CookieLocaleResolver.DEFAULT_COOKIE_NAME, startsWith("en")));
+			.andExpect(cookie().value(CookieLocaleResolver.DEFAULT_COOKIE_NAME, startsWith("en")));
 	}
 	
 

@@ -19,7 +19,7 @@ package org.springframework.test.web.server.samples.standalone.resultmatchers;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.sessionAttribute;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.standaloneSetup;
 
 import java.util.Locale;
@@ -50,17 +50,17 @@ public class SessionAttributeResultMatcherTests {
 	@Test
 	public void testSessionAttributeEqualTo() throws Exception {
 		this.mockMvc.perform(get("/"))
-            .andExpect(sessionAttribute("locale", Locale.UK));
+            .andExpect(request().sessionAttribute("locale", Locale.UK));
 		
 		// Hamcrest matchers...
 		this.mockMvc.perform(get("/"))
-	        .andExpect(sessionAttribute("locale", equalTo(Locale.UK)));
+	        .andExpect(request().sessionAttribute("locale", equalTo(Locale.UK)));
 	}
 	
 	@Test
 	public void testSessionAttributeMatcher() throws Exception {
 		this.mockMvc.perform(get("/"))
-	        .andExpect(sessionAttribute("locale", notNullValue()));
+	        .andExpect(request().sessionAttribute("locale", notNullValue()));
 	}
 	
 	

@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThan;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.statusReason;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.standaloneSetup;
 
 import org.junit.Before;
@@ -51,8 +50,8 @@ public class StatusResultMatcherTests {
 
 	@Test
 	public void testStatusInt() throws Exception {
-		this.mockMvc.perform(get("/created")).andExpect(status(201));
-		this.mockMvc.perform(get("/badRequest")).andExpect(status(400));
+		this.mockMvc.perform(get("/created")).andExpect(status().is(201));
+		this.mockMvc.perform(get("/badRequest")).andExpect(status().is(400));
 	}	
 
 	@Test
@@ -64,21 +63,21 @@ public class StatusResultMatcherTests {
 	@Test
 	public void testMatcher() throws Exception {
 		this.mockMvc.perform(get("/badRequest"))
-			.andExpect(status(allOf(greaterThanOrEqualTo(400), lessThan(500))));
+			.andExpect(status().is(allOf(greaterThanOrEqualTo(400), lessThan(500))));
 	}	
 
 	@Test
 	public void testReasonEqualTo() throws Exception {
-		this.mockMvc.perform(get("/badRequest")).andExpect(statusReason("Expired token"));
+		this.mockMvc.perform(get("/badRequest")).andExpect(status().reason("Expired token"));
 		
 		// Hamcrest matchers...
-		this.mockMvc.perform(get("/badRequest")).andExpect(statusReason(equalTo("Expired token")));
+		this.mockMvc.perform(get("/badRequest")).andExpect(status().reason(equalTo("Expired token")));
 	}
 
 	@Test
 	public void testReasonMatcher() throws Exception {
 		this.mockMvc.perform(get("/badRequest"))
-			.andExpect(statusReason(endsWith("token")));
+			.andExpect(status().reason(endsWith("token")));
 	}
 	
 	

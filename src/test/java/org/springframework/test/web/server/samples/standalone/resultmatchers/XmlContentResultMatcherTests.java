@@ -73,7 +73,7 @@ public class XmlContentResultMatcherTests {
 	@Test
 	public void testXmlEqualTo() throws Exception {
 		this.mockMvc.perform(get("/music/people").accept(MediaType.APPLICATION_XML))
-			.andExpect(contentXml(PEOPLE_XML));
+			.andExpect(content().xml(PEOPLE_XML));
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class XmlContentResultMatcherTests {
 		nsContext.setBindings(NAMESPACES);
 		
 		this.mockMvc.perform(get("/music/people").accept(MediaType.APPLICATION_XML))
-			.andExpect(contentNode(hasXPath("/ns:people/composers/composer[1]", nsContext)));
+			.andExpect(content().node(hasXPath("/ns:people/composers/composer[1]", nsContext)));
 	}
 	
 	

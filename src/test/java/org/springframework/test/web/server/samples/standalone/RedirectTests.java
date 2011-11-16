@@ -42,10 +42,10 @@ public class RedirectTests {
 			.perform(post("/persons").param("name", "Andy"))
 				.andExpect(status().isOk())
 	            .andExpect(redirectedUrl("/person/1"))
-	            .andExpect(modelSize(1))
-	            .andExpect(modelAttributeExists("id"))
-	            .andExpect(flashAttributeCount(1))
-	            .andExpect(flashAttribute("message", "success!"));
+	            .andExpect(model().size(1))
+	            .andExpect(model().attributeExists("id"))
+	            .andExpect(flash().attributeCount(1))
+	            .andExpect(flash().attribute("message", "success!"));
 	}
 
 	@Test
@@ -54,9 +54,9 @@ public class RedirectTests {
 			.perform(post("/persons"))
 				.andExpect(status().isOk())
 	            .andExpect(forwardedUrl("person/add"))
-	            .andExpect(modelSize(1))
-	            .andExpect(modelAttributeExists("person"))
-	            .andExpect(flashAttributeCount(0));
+	            .andExpect(model().size(1))
+	            .andExpect(model().attributeExists("person"))
+	            .andExpect(flash().attributeCount(0));
 	}
 
 	

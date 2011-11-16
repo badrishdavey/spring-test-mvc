@@ -19,12 +19,10 @@ package org.springframework.test.web.server.samples.standalone;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.contentType;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.modelAttribute;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.modelAttributeExists;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.modelSize;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.xpath;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.standaloneSetup;
@@ -64,8 +62,8 @@ public class ViewResolutionTests {
 		standaloneSetup(new PersonController()).setViewResolvers(viewResolver).build()
 			.perform(get("/person/Corea"))
 				.andExpect(status().isOk())
-				.andExpect(modelSize(1))
-				.andExpect(modelAttributeExists("person"))
+				.andExpect(model().size(1))
+				.andExpect(model().attributeExists("person"))
 				.andExpect(forwardedUrl("/WEB-INF/person/show.jsp"));
 	}
 
@@ -76,7 +74,7 @@ public class ViewResolutionTests {
 			.setSingleView(new MappingJacksonJsonView()).build()
 				.perform(get("/person/Corea"))
 					.andExpect(status().isOk())
-					.andExpect(contentType(MediaType.APPLICATION_JSON))
+					.andExpect(content().type(MediaType.APPLICATION_JSON))
 					.andExpect(jsonPath("$.person.name").value("Corea"));
 	}
 
@@ -90,7 +88,7 @@ public class ViewResolutionTests {
 			.setSingleView(new MarshallingView(marshaller)).build()
 				.perform(get("/person/Corea"))
 					.andExpect(status().isOk())
-					.andExpect(contentType(MediaType.APPLICATION_XML))
+					.andExpect(content().type(MediaType.APPLICATION_XML))
 					.andExpect(xpath("/person/name/text()").string(equalTo("Corea")));
 	}
 
@@ -115,18 +113,18 @@ public class ViewResolutionTests {
 
 		mockMvc.perform(get("/person/Corea"))
 			.andExpect(status().isOk())
-			.andExpect(modelSize(1))
-			.andExpect(modelAttributeExists("person"))
+			.andExpect(model().size(1))
+			.andExpect(model().attributeExists("person"))
 			.andExpect(forwardedUrl("person/show"));
 
 		mockMvc.perform(get("/person/Corea").accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andExpect(contentType(MediaType.APPLICATION_JSON))
+			.andExpect(content().type(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.person.name").value("Corea"));
 
 		mockMvc.perform(get("/person/Corea").accept(MediaType.APPLICATION_XML))
 			.andExpect(status().isOk())
-			.andExpect(contentType(MediaType.APPLICATION_XML))
+			.andExpect(content().type(MediaType.APPLICATION_XML))
 			.andExpect(xpath("/person/name/text()").string(equalTo("Corea")));
 	}	
 
@@ -135,7 +133,7 @@ public class ViewResolutionTests {
 		
 		standaloneSetup(new PersonController()).build()
 			.perform(get("/person/Corea"))
-				.andExpect(modelAttribute("person", hasProperty("name", equalTo("Corea"))))
+				.andExpect(model().attribute("person", hasProperty("name", equalTo("Corea"))))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("person/show"));  // InternalResourceViewResolver
 	}

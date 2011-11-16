@@ -16,7 +16,6 @@
 
 package org.springframework.test.web.server.samples.standalone.resultmatchers;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.header;
@@ -53,24 +52,28 @@ public class HeaderResultMatcherTests {
 	}
 
 	@Test
-	public void testHeaderEqualTo() throws Exception {
+	public void testValue() throws Exception {
 		long currentTime = new Date().getTime();
 		this.personController.setStubTimestamp(currentTime);
 		this.mockMvc.perform(get("/persons/1").header("If-Modified-Since", currentTime - (1000 * 60)))
-			.andExpect(header("Last-Modified", String.valueOf(currentTime)));
-		
-		// Hamcrest matcher...
+			.andExpect(header().string("Last-Modified", String.valueOf(currentTime)));
+	}
+
+	@Test
+	public void testLongValue() throws Exception {
+		long currentTime = new Date().getTime();
+		this.personController.setStubTimestamp(currentTime);
 		this.mockMvc.perform(get("/persons/1").header("If-Modified-Since", currentTime - (1000 * 60)))
-			.andExpect(header("Last-Modified", equalTo(String.valueOf(currentTime))));
+			.andExpect(header().longValue("Last-Modified", currentTime));
 	}
 	
 	@Test
-	public void testHeaderMatcher() throws Exception {
+	public void testMatcher() throws Exception {
 		long currentTime = new Date().getTime();
 		this.personController.setStubTimestamp(currentTime);
 		this.mockMvc.perform(get("/persons/1").header("If-Modified-Since", currentTime))
 			.andExpect(status().isNotModified())
-			.andExpect(header("Last-Modified", nullValue()));
+			.andExpect(header().string("Last-Modified", nullValue()));
 	}
 	
 	

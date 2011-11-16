@@ -40,7 +40,7 @@ public class ResponseBodyTests {
 		standaloneSetup(new PersonController()).build()
 			.perform(get("/person/Lee").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(contentType(MediaType.APPLICATION_JSON))
+				.andExpect(content().type(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.name").value("Lee"));
 	}	
 

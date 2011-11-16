@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.requestAttribute;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.standaloneSetup;
 
 import org.junit.Before;
@@ -48,13 +48,13 @@ public class RequestAttributeResultMatcherTests {
 	@Test
 	public void testRequestAttributeEqualTo() throws Exception {
 		this.mockMvc.perform(get("/main/1").servletPath("/main"))
-            .andExpect(requestAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/{id}"))
-            .andExpect(requestAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, "/1"));
+            .andExpect(request().attribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/{id}"))
+            .andExpect(request().attribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, "/1"));
 		
 		// Hamcrest matchers...
 		this.mockMvc.perform(get("/main/1").servletPath("/main"))
-	        .andExpect(requestAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, equalTo("/{id}")))
-	        .andExpect(requestAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, equalTo("/1")));
+	        .andExpect(request().attribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, equalTo("/{id}")))
+	        .andExpect(request().attribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, equalTo("/1")));
 	}
 	
 	@Test
@@ -63,8 +63,8 @@ public class RequestAttributeResultMatcherTests {
 		String producibleMediaTypes = HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE;
 		
 		this.mockMvc.perform(get("/1"))
-	        .andExpect(requestAttribute(producibleMediaTypes, contains(MediaType.APPLICATION_JSON)))
-	        .andExpect(requestAttribute(producibleMediaTypes, not(contains(MediaType.APPLICATION_XML))));
+	        .andExpect(request().attribute(producibleMediaTypes, contains(MediaType.APPLICATION_JSON)))
+	        .andExpect(request().attribute(producibleMediaTypes, not(contains(MediaType.APPLICATION_XML))));
 	}
 	
 	

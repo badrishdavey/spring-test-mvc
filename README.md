@@ -49,7 +49,10 @@ There are many more examples in the [org.springframework.test.web.server.samples
 
 The API is designed to be fluent and readable. Therefore to learn we recommend writing some tests and using code completion to discover what is available. 
 
-Eclipse developers should add the following classes as "Favorites" under Preferences/Java/Editor/Content Assist: _MockMvcBuilders.*_, _MockMvcRequestBuilders.*_, _MockMvcResultMatchers.*_, and MockMvcResultHandlers.*_. Now when you use Ctrl+Space Eclipse will suggest matching static factory methods from those classes.  
+Eclipse developers should add the following classes as "Favorites" under Preferences/Java/Editor/Content Assist: 
+_MockMvcBuilders.*_, _MockMvcRequestBuilders.*_, _MockMvcResultMatchers.*_, and _MockMvcResultHandlers.*_. 
+
+Now when you use _Ctrl+Space_, Eclipse will suggest matching static factory methods from those classes.  
 
 Limitations
 -----------

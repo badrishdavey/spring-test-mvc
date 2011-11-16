@@ -20,9 +20,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.handlerMethod;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.handlerMethodName;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.handlerType;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.standaloneSetup;
 
 import java.lang.reflect.Method;
@@ -52,26 +50,26 @@ public class HandlerResultMatcherTests {
 	
 	@Test
 	public void testHandlerType() throws Exception {
-		this.mockMvc.perform(get("/")).andExpect(handlerType(SimpleController.class));
+		this.mockMvc.perform(get("/")).andExpect(handler().type(SimpleController.class));
 	}
 	
 	@Test
 	public void testHandlerMethodNameEqualTo() throws Exception {
-		this.mockMvc.perform(get("/")).andExpect(handlerMethodName("handle"));
+		this.mockMvc.perform(get("/")).andExpect(handler().methodName("handle"));
 		
 		// Hamcrest matcher..
-		this.mockMvc.perform(get("/")).andExpect(handlerMethodName(equalTo("handle")));
+		this.mockMvc.perform(get("/")).andExpect(handler().methodName(equalTo("handle")));
 	}
 	
 	@Test
 	public void testHandlerMethodNameMatcher() throws Exception {
-		this.mockMvc.perform(get("/")).andExpect(handlerMethodName(is(not("save"))));
+		this.mockMvc.perform(get("/")).andExpect(handler().methodName(is(not("save"))));
 	}
 
 	@Test
 	public void testHandlerMethod() throws Exception {
 		Method method = SimpleController.class.getMethod("handle");
-		this.mockMvc.perform(get("/")).andExpect(handlerMethod(method));
+		this.mockMvc.perform(get("/")).andExpect(handler().method(method));
 	}
 
 	

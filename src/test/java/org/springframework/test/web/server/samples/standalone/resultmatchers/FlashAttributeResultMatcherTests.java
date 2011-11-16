@@ -21,9 +21,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.flashAttribute;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.flashAttributeCount;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.flashAttributeExists;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.standaloneSetup;
 
 import java.net.URL;
@@ -53,35 +51,35 @@ public class FlashAttributeResultMatcherTests {
 	@Test
 	public void testExists() throws Exception {
 		this.mockMvc.perform(post("/persons"))
-            .andExpect(flashAttributeExists("one", "two", "three"));
+            .andExpect(flash().attributeExists("one", "two", "three"));
 	}
 
 	@Test
 	public void testCount() throws Exception {
 		this.mockMvc.perform(post("/persons"))
-            .andExpect(flashAttributeCount(3));
+            .andExpect(flash().attributeCount(3));
 	}
 	
 	@Test
 	public void testEqualTo() throws Exception {
 		this.mockMvc.perform(post("/persons"))
-            .andExpect(flashAttribute("one", "1"))
-            .andExpect(flashAttribute("two", 2.222))
-            .andExpect(flashAttribute("three", new URL("http://example.com")));
+            .andExpect(flash().attribute("one", "1"))
+            .andExpect(flash().attribute("two", 2.222))
+            .andExpect(flash().attribute("three", new URL("http://example.com")));
 		
 		// Hamcrest matchers...
 		this.mockMvc.perform(post("/persons"))
-	        .andExpect(flashAttribute("one", equalTo("1")))
-	        .andExpect(flashAttribute("two", equalTo(2.222)))
-	        .andExpect(flashAttribute("three", equalTo(new URL("http://example.com"))));
+	        .andExpect(flash().attribute("one", equalTo("1")))
+	        .andExpect(flash().attribute("two", equalTo(2.222)))
+	        .andExpect(flash().attribute("three", equalTo(new URL("http://example.com"))));
 	}
 
 	@Test
 	public void testMatchers() throws Exception {
 		this.mockMvc.perform(post("/persons"))
-	        .andExpect(flashAttribute("one", containsString("1")))
-	        .andExpect(flashAttribute("two", closeTo(2, 0.5)))
-	        .andExpect(flashAttribute("three", notNullValue()));
+	        .andExpect(flash().attribute("one", containsString("1")))
+	        .andExpect(flash().attribute("two", closeTo(2, 0.5)))
+	        .andExpect(flash().attribute("three", notNullValue()));
 	}
 
 	

@@ -21,10 +21,11 @@ import org.springframework.test.web.server.ResultHandler;
 public class MockMvcResultHandlers {
 
 	/**
-	 * Print the results of an executed request to {@link System#out}.
+	 * Print the results of an executed request to {@code System.out} using 
+	 * the encoding the response.
 	 */
 	public static ResultHandler print() {
 		return new PrintingResultHandler(System.out);
 	}	
-	
+
 }

@@ -2,6 +2,11 @@ package org.springframework.test.web.server.result;
 
 import static org.springframework.test.web.AssertionErrors.assertEquals;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.server.ResultMatcher;
@@ -11,11 +16,55 @@ import org.springframework.test.web.server.ResultMatcher;
  * 
  * @author Keesun Baik
  * @author Rossen Stoyanchev
- * 
- * @see MockMvcResultMatchers#status(int)
- * @see MockMvcResultMatchers#statusReason(String)
  */
 public class StatusResultMatchers {
+
+	/**
+	 * Assert the response status code with the given matcher.
+	 * @see #reason(Matcher)
+	 * @see #reason(String)
+	 */
+	public ResultMatcher is(final Matcher<Integer> matcher) {
+		return new ResultMatcherAdapter() {
+			
+			@Override
+			public void matchResponse(MockHttpServletResponse response) throws Exception {
+				MatcherAssert.assertThat("Status: ", response.getStatus(), matcher);
+			}
+		};
+	}
+
+	/**
+	 * Assert the response status code is equal to an integer value.
+	 * @see #reason(Matcher)
+	 * @see #reason(String)
+	 */
+	public ResultMatcher is(int status) {
+		return is(Matchers.equalTo(status));
+	}
+
+
+	/**
+	 * Assert the response reason with the given matcher.
+	 * @see HttpServletResponse#sendError(int, String)
+	 */
+	public ResultMatcher reason(final Matcher<? super String> matcher) {
+		return new ResultMatcherAdapter() {
+			
+			@Override
+			public void matchResponse(MockHttpServletResponse response) throws Exception {
+				MatcherAssert.assertThat("Status reason: ", response.getErrorMessage(), matcher);
+			}
+		};
+	}
+	
+	/**
+	 * Assert the response reason is equal to a String value.
+	 * @see HttpServletResponse#sendError(int, String)
+	 */
+	public ResultMatcher reason(String reason) {
+		return reason(Matchers.equalTo(reason));
+	}
 
     /**
      * Assert the response status is {@code HttpStatus.CONTINUE} (100)
@@ -423,5 +472,5 @@ public class StatusResultMatchers {
 			}
 		};
 	}
-
+	
 }

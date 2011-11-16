@@ -17,7 +17,7 @@
 package org.springframework.test.web.server.result;
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -34,6 +34,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.WebUtils;
 
 /**
  * Prints the results of an executed request to an {@link OutputStream}.
@@ -44,14 +45,15 @@ public class PrintingResultHandler implements ResultHandler {
 
 	private static final int LABEL_WIDTH = 20;
 	
-	private final PrintWriter writer;
+	private final OutputStream out;
+	
+	private PrintStream printer;
 
 	/**
-	 * Protected constructor.
-	 * @see MockMvcResultMatchers
+	 * Protected constructor. See {@link MockMvcResultHandlers#print()}.
 	 */
 	protected PrintingResultHandler(OutputStream outputStream) {
-		this.writer = new PrintWriter(outputStream);
+		this.out = outputStream;
 	}
 
 	public void handle(MockHttpServletRequest request, 
@@ -60,8 +62,13 @@ public class PrintingResultHandler implements ResultHandler {
 					  HandlerInterceptor[] interceptors, 
 					  ModelAndView mav, 
 					  Exception exception) throws Exception {
+
+		String encoding = response.getCharacterEncoding();
 		
-		this.writer.println("-----------------------------------------");
+		this.printer = new PrintStream(this.out, true, 
+				(encoding != null) ? encoding : WebUtils.DEFAULT_CHARACTER_ENCODING);
+
+		this.printer.println("-----------------------------------------");
 		
 		printRequest(request);
 		printHandler(handler);
@@ -69,8 +76,7 @@ public class PrintingResultHandler implements ResultHandler {
 		printModelAndView(mav);
 		printResponse(response);
 
-		this.writer.println();
-		this.writer.flush();
+		this.printer.println();
 	}
 
 	protected void printRequest(MockHttpServletRequest request) {
@@ -103,12 +109,12 @@ public class PrintingResultHandler implements ResultHandler {
 	}
 	
 	protected void printHeading(String text) {
-		this.writer.println();
-		this.writer.println(formatLabel(text, LABEL_WIDTH).append(":"));
+		this.printer.println();
+		this.printer.println(formatLabel(text, LABEL_WIDTH).append(":"));
 	}
 
 	protected void printValue(String label, Object value) {
-		this.writer.println(formatLabel(label, LABEL_WIDTH).append(" = ").append(value).toString());
+		this.printer.println(formatLabel(label, LABEL_WIDTH).append(" = ").append(value).toString());
 	}
 	
 	private StringBuilder formatLabel(String label, int width) {

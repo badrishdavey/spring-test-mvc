@@ -19,9 +19,8 @@ package org.springframework.test.web.server.samples.context;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.contentType;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.forwardedUrl;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.handlerType;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.annotationConfigSetup;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.xmlConfigSetup;
@@ -84,8 +83,8 @@ public class WarRootDirectoryTests {
 	public void resourceRequest() throws Exception {
 		mockMvc.perform(get("/resources/Spring.js"))
 			.andExpect(status().isOk())
-			.andExpect(contentType(MediaType.APPLICATION_OCTET_STREAM))
-			.andExpect(content(containsString("Spring={};")));
+			.andExpect(content().type(MediaType.APPLICATION_OCTET_STREAM))
+			.andExpect(content().string(containsString("Spring={};")));
 	}
 
 	// Resource request forwarded to the default servlet (i.e. <mvc:default-servlet-handler />).
@@ -94,7 +93,7 @@ public class WarRootDirectoryTests {
 	public void resourcesViaDefaultServlet() throws Exception {
 		mockMvc.perform(get("/unknown/resource"))
 			.andExpect(status().isOk())
-			.andExpect(handlerType(DefaultServletHttpRequestHandler.class))
+			.andExpect(handler().type(DefaultServletHttpRequestHandler.class))
 			.andExpect(forwardedUrl("default"));
 	}
 

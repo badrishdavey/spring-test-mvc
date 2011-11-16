@@ -87,7 +87,7 @@ public class MockMvc {
 			String contentType = response.getHeader("Content-Type");
 			if (contentType != null) {
 				MediaType mediaType = MediaType.parseMediaType(contentType);
-				response.setContentType(mediaType.getType() + "/" + mediaType.getSubtype());
+				response.setContentType(mediaType.toString());
 				if (mediaType.getCharSet() != null) {
 					response.setCharacterEncoding(mediaType.getCharSet().name());
 				}
